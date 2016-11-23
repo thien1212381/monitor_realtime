@@ -26,6 +26,7 @@ client.on('connect',function(){
 app.get('/',function(req,res){
   var active_user;
   dataFromRedis.getData(client,function(err,data){
+
     res.render('index',data);
   })
 });
@@ -41,28 +42,27 @@ server.listen(app.get('port'), function () {
 //socket io
 io = io.listen(server);
 io.on('connection',function(socket){
-  console.log('Socket is connected!!');
+  //console.log('Socket is connected!!');
   dataFromRedis.getData(client,function(err,data_random){
-    console.log(data_random);
+    //console.log(data_random);
     //loop
     (function loop() {
       setTimeout(function () {
         //random active_user
         data_random.active_user += Math.round(Math.random()*10+1);
-        client.set('active_user',data_random.active_user);
+        //client.set('active_user',data_random.active_user);
         data_random.views += Math.round(Math.random()*10+1);
-        client.set('views',data_random.views);
+        //client.set('views',data_random.views);
         data_random.watch_time += Math.round(Math.random()*10+1);
-        client.set('watch_time',data_random.watch_time);
+        //client.set('watch_time',data_random.watch_time);
         data_random.shares += Math.round(Math.random()*10+1);
-        client.set('shares',data_random.shares);
+        //client.set('shares',data_random.shares);
 
-        //get active_user from redis server
-        dataFromRedis.getData(client,function(err,data){
-          socket.emit('loadData',data);
-          loop();
-        })
-      }, 5000);
+
+        socket.emit('loadData',data_random);
+        loop();
+
+      }, 3000);
     }());
     // end loop
   });
