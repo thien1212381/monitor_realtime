@@ -26,7 +26,6 @@ client.on('connect',function(){
 app.get('/',function(req,res){
   var active_user;
   dataFromRedis.getData(client,function(err,data){
-
     res.render('index',data);
   })
 });
@@ -42,9 +41,8 @@ server.listen(app.get('port'), function () {
 //socket io
 io = io.listen(server);
 io.on('connection',function(socket){
-  //console.log('Socket is connected!!');
+  console.log('Socket is connected!!');
   dataFromRedis.getData(client,function(err,data_random){
-    //console.log(data_random);
     //loop
     (function loop() {
       setTimeout(function () {
@@ -62,9 +60,18 @@ io.on('connection',function(socket){
         socket.emit('loadData',data_random);
         loop();
 
-      }, 3000);
+      }, 2000);
     }());
     // end loop
+    (function loopchart() {
+      setTimeout(function () {
+        dataFromRedis.getData(client,function(err,data){
+          socket.emit('loadChart',data);
+          loopchart();
+        })
+      }, 5000);
+    }());
+
   });
 
 
