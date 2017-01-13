@@ -30,6 +30,10 @@ app.get('/',function(req,res){
   })
 });
 
+app.get('/heatmap',function(req,res){
+  res.render('heatmap');
+})
+
 
 //server listening
 var server = http.createServer(app);

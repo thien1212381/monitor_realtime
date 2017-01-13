@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Dash Board | </title>
+
+    <!-- Bootstrap -->
+    <link href="vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- bootstrap-daterangepicker -->
+    <link href="vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
+    <link href="vendors/iCheck/skins/flat/green.css" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="build/css/custom.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="leaflet.css" />
+    <script src="leaflet.js"></script>
+    <script src="leaflet-heat.js"></script>
+    <style>
+      #map {
+        height: 100%;
+      }
+    </style>
+  </head>
+
+  <body class="nav-md">
+
+              <div id="map"></div>
+
+              <script src="provinces.js"></script>
+              <script>
+                var dataset = [];
+                var maxView = 0;
+                var map = L.map('map').setView([16.054442, 108.201813], 6);
+                var tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+                  attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+                }).addTo(map);
+                var options = {maxZoom: 6};
+                var heat = L.heatLayer(dataset, options).addTo(map);
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                  if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+                    var trafficData = JSON.parse(xhttp.responseText);
+                    maxView = trafficData[0].view;
+                    for (var i = 0, len = trafficData.length; i < len; i++) {
+                      var location = trafficData[i].location.toLowerCase();
+                      var view = trafficData[i].view;
+                      var locationCoor = provincesCoordinate[location];
+                      locationCoor.push(view / maxView);
+                      dataset.push(locationCoor);
+                    }
+                    console.log(dataset);
+                    heat.setLatLngs(dataset);
+                  }
+                };
+                xhttp.open("GET", "http://61.28.227.198:4326/locationtraffic", true);
+                xhttp.send();
+              </script>
+      
+
+  </body>
+</html>
+
+
+</head>
+<body>
+
+
+</body>
+</html>
